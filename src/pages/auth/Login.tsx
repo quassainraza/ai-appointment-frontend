@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Form,
   Input,
@@ -23,15 +23,13 @@ const { Title, Text } = Typography;
 export const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const login = useAuthStore((state) => state.login);
-  const navigate = useNavigate();
 
   const onFinish = async (values: { email: string; password: string }) => {
     setLoading(true);
     try {
-      console.log("Login values:", values); // Debugging line
       await login(values);
       message.success("Login successful!");
-      navigate("/dashboard");
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage =

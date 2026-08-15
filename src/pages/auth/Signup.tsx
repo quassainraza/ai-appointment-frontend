@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState } from "react"; // Added useEffect
+import { Link } from "react-router-dom";
 import {
   Form,
   Input,
@@ -24,7 +24,6 @@ const { Title, Text } = Typography;
 export const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const signup = useAuthStore((state) => state.signup);
-  const navigate = useNavigate();
 
   const onFinish = async (values: {
     name: string;
@@ -39,14 +38,14 @@ export const Signup: React.FC = () => {
         password: values.password,
       });
       message.success("Account created successfully!");
-      navigate("/dashboard");
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      // ONLY turn off the loading state if the signup FAILED
+      setLoading(false);
       const errorMessage =
         error.response?.data?.message || "Failed to create account";
       message.error(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 
