@@ -1,36 +1,23 @@
 import React, { useMemo } from "react";
-import {
-  Row,
-  Col,
-  Typography,
-  Layout,
-  ConfigProvider,
-  theme,
-  Grid,
-} from "antd";
+import { Row, Col, Typography, Layout, Grid, Card } from "antd";
 import { ChatBot } from "../../components/ChatBot/ChatBot";
 import { AppointmentForm } from "../../components/AppointmentForm/AppointmentForm";
 import { AppointmentList } from "../../components/AppointmentList/AppointmentList";
+import { ErrorBoundary } from "../../components/ErrorBoundary/ErrorBoundary";
+import { CONTENT_STYLE } from "../../enums/dashboardEnums";
 
 const { Title } = Typography;
 const { Content } = Layout;
 const { useBreakpoint } = Grid;
 
-// 1. Move static theme config outside the component to preserve reference equality
-const DASHBOARD_THEME = {
-  algorithm: theme.darkAlgorithm,
-  token: {
-    colorPrimary: "#3b82f6",
-    borderRadius: 8,
-    colorBgContainer: "#1e293b",
-  },
-};
-
-// 2. Move static container styles outside component scope
-const CONTENT_STYLE: React.CSSProperties = {
-  maxWidth: 1400,
-  margin: "0 auto",
-};
+const WidgetFallback = ({ title }: { title: string }) => (
+  <Card
+    style={{ textAlign: "center", padding: "20px 0", borderColor: "#ef4444" }}
+  >
+    <h3 style={{ color: "#ef4444", marginTop: 0 }}>{title} Unavailable</h3>
+    <p style={{ color: "#94a3b8", marginBottom: 0 }}>Failed to load widget.</p>
+  </Card>
+);
 
 export const Dashboard: React.FC = () => {
   const screens = useBreakpoint();
@@ -62,26 +49,32 @@ export const Dashboard: React.FC = () => {
   );
 
   return (
-    <ConfigProvider theme={DASHBOARD_THEME}>
-      <div style={wrapperStyle}>
-        <Content style={CONTENT_STYLE}>
-          <Title level={2} style={titleStyle}>
-            Appointment Booking Portal
-          </Title>
+    <div style={wrapperStyle}>
+      <Content style={CONTENT_STYLE}>
+        <Title level={2} style={titleStyle}>
+          Appointment Booking Portal
+        </Title>
 
-          <Row gutter={gutter}>
-            <Col xs={24} lg={8}>
+        <Row gutter={gutter}>
+          <Col xs={24} lg={8}>
+            <ErrorBoundary fallback={<WidgetFallback title="AI Chat" />}>
               <ChatBot />
-            </Col>
-            <Col xs={24} md={12} lg={8}>
+            </ErrorBoundary>
+          </Col>
+          <Col xs={24} md={12} lg={8}>
+            <ErrorBoundary fallback={<WidgetFallback title="Booking Form" />}>
               <AppointmentForm />
-            </Col>
-            <Col xs={24} md={12} lg={8}>
+            </ErrorBoundary>
+          </Col>
+          <Col xs={24} md={12} lg={8}>
+            <ErrorBoundary
+              fallback={<WidgetFallback title="Appointment List" />}
+            >
               <AppointmentList />
-            </Col>
-          </Row>
-        </Content>
-      </div>
-    </ConfigProvider>
+            </ErrorBoundary>
+          </Col>
+        </Row>
+      </Content>
+    </div>
   );
 };
