@@ -13,7 +13,9 @@ export interface AppointmentPayload {
 
 export interface Appointment {
   id: string;
+
   title: string;
-  appointmentDate: string;
-  createdAt?: string;
+  appointment_date: string; // The crucial fix!
+  status: string;
+  created_at: string; // Updated to snake_case
 }

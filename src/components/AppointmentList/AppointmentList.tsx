@@ -89,11 +89,27 @@ export const AppointmentList: React.FC = () => {
           dataSource={appointments}
           locale={{ emptyText: "No appointments booked yet." }}
           renderItem={(item) => {
-            const formattedDate = dayjs(item.appointmentDate).format(
-              "MMM DD, YYYY",
-            );
-            const formattedTime = dayjs(item.appointmentDate).format("hh:mm A");
-            const isPast = dayjs(item.appointmentDate).isBefore(dayjs());
+            // 1. Read the EXACT key from the backend JSON
+            const rawDate = item.appointment_date;
+
+            // 2. Parse it with dayjs
+            const targetDateTime = rawDate ? dayjs(rawDate) : null;
+            const isValidDate = targetDateTime
+              ? targetDateTime.isValid()
+              : false;
+
+            // 3. Format Date and Time
+            const formattedDate = isValidDate
+              ? targetDateTime!.format("MMM DD, YYYY")
+              : "No Date";
+
+            const formattedTime = isValidDate
+              ? targetDateTime!.format("hh:mm A")
+              : "--:--";
+
+            const isPast = isValidDate
+              ? targetDateTime!.isBefore(dayjs())
+              : false;
 
             return (
               <List.Item
